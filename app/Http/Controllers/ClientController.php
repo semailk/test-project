@@ -47,7 +47,9 @@ class ClientController extends Controller
      */
     public function edit(Client $client): View
     {
-        return \view('main.edit', compact('client'));
+        $managers = Manager::query()->get();
+
+        return \view('main.edit', compact('client', 'managers'));
     }
 
     /**
@@ -60,6 +62,15 @@ class ClientController extends Controller
     public function update(ClientRequest $request, Client $client): RedirectResponse
     {
         $client->update($request->validated());
+        $managersId = $request->get('manager_id');
+        $fees = $request->get('fee');
+
+        $syncData = [];
+        foreach ($managersId as $key => $managerId) {
+            $syncData[$managerId] = ['fee' => $fees[$key]];
+        }
+
+        $client->managers()->sync($syncData);
 
         return redirect()->back()->with(['success' => 'Updated successfully!']);
     }
@@ -84,9 +95,9 @@ class ClientController extends Controller
     public function store(ClientStoreRequest $request): RedirectResponse
     {
         $client = Client::query()->create($request->validated());
-        foreach ($request->get('manager_id') as $key => $manager_id){
-            if ($manager_id != null){
-                if ($request->get('fee')[$key] != null){
+        foreach ($request->get('manager_id') as $key => $manager_id) {
+            if ($manager_id != null) {
+                if ($request->get('fee')[$key] != null) {
                     $client->managers()->attach($manager_id, ['fee' => $request->get('fee')[$key]]);
                 }
             }
