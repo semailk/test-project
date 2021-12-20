@@ -17,23 +17,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Client extends Model
 {
     use HasFactory, SoftDeletes;
+    protected $softDelete = true;
 
     protected $fillable = [
         'name',
         'surname',
         'email',
-        'phone'
+        'phone',
+        'deleted_at'
     ];
 
-    /**
-     * Возвращаем откуда пришёл Клиент
-     *
-     * @return HasOne
-     */
-    public function source(): HasOne
-    {
-        return $this->hasOne(Source::class);
-    }
 
     /**
      * Возращаем всех менеджеров клиента
@@ -43,5 +36,16 @@ class Client extends Model
     public function managers(): BelongsToMany
     {
         return $this->belongsToMany(Manager::class)->withPivot('fee')->as('fee');
+    }
+
+    /**
+     * Возращаем полное имя клиента
+     *
+     * @param Client $client
+     * @return string
+     */
+    public static function getFullName(Client $client): string
+    {
+        return $client->name . ' ' . $client->surname;
     }
 }

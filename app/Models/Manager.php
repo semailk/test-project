@@ -30,4 +30,13 @@ class Manager extends Model
     {
         return $this->belongsToMany(Client::class)->withPivot('fee')->as('fee');
     }
+
+    /**
+     * @param Manager $manager
+     * @return string
+     */
+    public static function getFullName(Manager $manager): string
+    {
+        return $manager->name . ' ' . $manager->surname;
+    }
 }

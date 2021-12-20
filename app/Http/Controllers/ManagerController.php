@@ -15,7 +15,7 @@ class ManagerController extends Controller
      */
     public function index(): View
     {
-        $managers = Manager::query()->get();
+        $managers = Manager::query()->has('clients')->get();
 
         return view('manager.index', compact('managers'));
     }

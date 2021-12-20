@@ -44,6 +44,7 @@
     <a href="{{ route('clients.index') }}">Главная страница</a>
     <a href="{{ route('clients.index') }}">Клиенты</a>
     <a href="{{ route('managers.index') }}">Менеджера</a>
+    <a href="{{ route('clients.create') }}">Добавить клиента</a>
 </header>
 <hr>
 @yield('content')

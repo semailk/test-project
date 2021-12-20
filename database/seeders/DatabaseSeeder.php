@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Client;
 use App\Models\Manager;
 use App\Models\Source;
+use DB;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -16,10 +17,24 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        Client::factory()->count(100)->has(Source::factory()->count(1))->create();
+        $array = [
+            'fb',
+            'tg',
+            'website',
+            'client',
+            'partner'
+        ];
+        for ($i=0; $i < count($array); $i++){
+            Source::query()->create([
+                'title' => $array[$i]
+            ]);
+        }
+        Client::factory(['source_id' => 1])->count(100)->create();
+        Client::factory(['source_id' => null])->count(10)->create();
         Manager::factory()->count(30)->create();
 
         $managersCount = Manager::query()->get()->count();
+
 
         for ($i = 1; $i <= 3; $i++) {
             Client::query()->get()->map(function ($client) use ($managersCount) {

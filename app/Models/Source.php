@@ -26,4 +26,18 @@ class Source extends Model
     {
         return $this->belongsTo(Client::class);
     }
+
+    /**
+     * Извлекаем названия ресурса
+     *
+     * @param $id
+     * @return mixed
+     */
+    public static function getSourceTitle($id): string
+    {
+        $title = Source::query()
+            ->where('id', $id)
+            ->get()->all()[0]->title;
+        return $title;
+    }
 }
