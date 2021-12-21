@@ -6,6 +6,7 @@
         </div>
     @endif
     <div class="container">
+        <h1>Добавление клиента</h1>
         <form action="{{ route('clients.store') }}" method="post" class="row g-3">
             @csrf
             <div class="col-md-6">

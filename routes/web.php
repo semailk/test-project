@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ManagerController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,9 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/dont/source', [HomeController::class, 'index'])->name('dont.source');
 
 Route::resource('/clients', ClientController::class)->except('show');
 Route::get('/managers', [ManagerController::class, 'index'])->name('managers.index');

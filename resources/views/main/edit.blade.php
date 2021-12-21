@@ -1,6 +1,7 @@
 @extends('layouts.main')
 @section('content')
     <div class="container">
+        <h1>Редактирование клиента</h1>
         <form action="{{ route('clients.update', $client->id) }}" method="post">
             @method('PUT')
             @csrf
@@ -25,11 +26,25 @@
                 <div id="phoneHelp" class="form-text">Edit phone.</div>
             </div>
 
+            <div class="md-3 w-50">
+                <label for="source">Source</label>
+                <select name="source_id" id="source" class="form-control">
+                    @if($client->source_id)
+                        <option
+                            value="{{ $client->source_id }}">{{\App\Models\Source::getSourceTitle($client->source_id)}}</option>
+                    @else
+                        <option value="">Select source</option>
+                    @endif
+                    @foreach($sources as $source)
+                            <option value="{{ $source->id }}"> {{ $source->title }} </option>
+                    @endforeach
+                </select>
+            </div>
             <div class="select-managers">
                 @foreach($client->managers as $manager)
                     <div class="col-md-12 mt-2 d-flex">
                         <label for="Manager" class="form-label">Manager</label>
-                        <select class="form-control" name="manager_id[]" id="Manager">
+                        <select class="form-control" name="manager_id[]" id="Manager">123
                             <option value="{{ $manager->id }}">{{ \App\Models\Manager::getFullName($manager) }}</option>
                             @foreach($managers as $man)
                                 <option value="{{ $man->id }}">{{ \App\Models\Manager::getFullName($man) }}</option>
@@ -42,7 +57,7 @@
                 @endforeach
             </div>
 
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary mt-5">Submit</button>
         </form>
         @if(session('success'))
             <div class="alert-success">

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ClientRequest;
+use App\Http\Requests\ClientUpdateRequest;
 use App\Http\Requests\ClientStoreRequest;
 use App\Models\Client;
 use App\Models\Manager;
@@ -22,8 +22,7 @@ class ClientController extends Controller
         $clientInfo['count'] = Client::query()->get()->count();
         $clientInfo['deleted'] = Client::query()->withTrashed()->whereNotNull('deleted_at')->get()->count();
         $clientInfo['dont_source'] = Client::query()->whereNull('source_id')->get();
-        $clients = Client::query()->has('managers')->orderBy('created_at', 'desc')->paginate(10);
-
+        $clients = Client::query()->with(['managers','source'])->orderBy('created_at', 'desc')->paginate(10);
 
         return view('main.index', compact('clients', 'clientInfo'));
     }
@@ -48,18 +47,19 @@ class ClientController extends Controller
     public function edit(Client $client): View
     {
         $managers = Manager::query()->get();
+        $sources = Source::query()->get();
 
-        return \view('main.edit', compact('client', 'managers'));
+        return \view('main.edit', compact('client', 'managers', 'sources'));
     }
 
     /**
      * Обновление клиента
      *
-     * @param ClientRequest $request
+     * @param ClientUpdateRequest $request
      * @param Client $client
      * @return RedirectResponse
      */
-    public function update(ClientRequest $request, Client $client): RedirectResponse
+    public function update(ClientUpdateRequest $request, Client $client): RedirectResponse
     {
         $client->update($request->validated());
         $managersId = $request->get('manager_id');

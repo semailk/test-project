@@ -40,8 +40,8 @@
 </style>
 <body>
 <header>
-    <a id="logo" href="">Rai<span>s</span>on</a>
-    <a href="{{ route('clients.index') }}">Главная страница</a>
+    <a id="logo" href="{{ route('home') }}">Rai<span>s</span>on</a>
+    <a href="{{ route('home') }}">Главная страница</a>
     <a href="{{ route('clients.index') }}">Клиенты</a>
     <a href="{{ route('managers.index') }}">Менеджера</a>
     <a href="{{ route('clients.create') }}">Добавить клиента</a>

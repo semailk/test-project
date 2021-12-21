@@ -3,8 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class ClientRequest extends FormRequest
+class ClientUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -42,6 +43,10 @@ class ClientRequest extends FormRequest
                 'min:3',
                 'max:255'
             ],
+            'source_id' => [
+                'integer',
+                Rule::exists('sources','id')
+            ]
         ];
     }
 

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property string $title
@@ -20,24 +21,11 @@ class Source extends Model
     /**
      * Возвращаем Клиента
      *
-     * @return BelongsTo
+     * @return HasMany
      */
-    public function client(): BelongsTo
+    public function client(): HasMany
     {
-        return $this->belongsTo(Client::class);
+        return $this->hasMany(Client::class);
     }
 
-    /**
-     * Извлекаем названия ресурса
-     *
-     * @param $id
-     * @return mixed
-     */
-    public static function getSourceTitle($id): string
-    {
-        $title = Source::query()
-            ->where('id', $id)
-            ->get()->all()[0]->title;
-        return $title;
-    }
 }

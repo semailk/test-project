@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $surname
  * @property string $email
  * @property string $phone
+ * @property integer $source_id
  */
 class Client extends Model
 {
@@ -24,7 +26,8 @@ class Client extends Model
         'surname',
         'email',
         'phone',
-        'deleted_at'
+        'deleted_at',
+        'source_id'
     ];
 
 
@@ -44,8 +47,16 @@ class Client extends Model
      * @param Client $client
      * @return string
      */
-    public static function getFullName(Client $client): string
+    public function getFullNameAttribute(): string
     {
-        return $client->name . ' ' . $client->surname;
+        return $this->name . ' ' . $this->surname;
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function source(): BelongsTo
+    {
+        return $this->belongsTo(Source::class);
     }
 }
