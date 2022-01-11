@@ -1,5 +1,6 @@
 @extends('layouts.main')
 @section('content')
+<div>
     @if(session('success'))
         <div class="alert-success">
             {{ session('success') }}
@@ -20,11 +21,11 @@
         <tbody>
         @foreach($clients as $client)
             <tr>
-                <th scope="row">{{ \App\Models\Client::getFullName($client) }}</th>
+                <th scope="row">{{ $client->fullName }}</th>
                 <td>{{ $client->email }}</td>
                 <td>{{ $client->phone }}</td>
 
-                <td>@if(!is_null($client->source_id)){{ \App\Models\Source::getSourceTitle($client->source_id) }}@endif</td>
+                <td>@if(!is_null($client->source_id)){{ $client->source->title }}@endif</td>
                 <td>
                     @foreach($client->managers as $manager)
                         {{$manager->name}} - Fee: {{ $manager->fee->fee }} <br>
@@ -71,11 +72,11 @@
             <tbody>
             @foreach($clientInfo['dont_source'] as $client)
                 <tr>
-                    <th scope="row">{{ \App\Models\Client::getFullName($client) }}</th>
+                    <th scope="row">{{ $client->fullName }}</th>
                     <td>{{ $client->email }}</td>
                     <td>{{ $client->phone }}</td>
 
-                    <td>@if(!is_null($client->source_id)){{ \App\Models\Source::getSourceTitle($client->source_id) }}@endif</td>
+                    <td>@if(!is_null($client->source_id)){{ $client->source->title }}@endif</td>
                     <td>
                         @foreach($client->managers as $manager)
                             {{$manager->name}} - Fee: {{ $manager->fee->fee }} <br>
@@ -101,4 +102,5 @@
             </tbody>
         </table>
     @endif
+    </div>
 @endsection
