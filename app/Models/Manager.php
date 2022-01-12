@@ -16,11 +16,15 @@ class Manager extends Model
     use HasFactory;
 
     protected $fillable = [
-      'name',
-      'surname',
-      'salary'
+        'name',
+        'surname',
+        'salary',
+        'plain'
     ];
 
+    protected $casts = [
+      'plain' => 'array'
+    ];
     /**
      * Возращаем всех клиектов менеджера
      *

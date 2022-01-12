@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Client;
+use App\Models\Deposit;
 use App\Models\Manager;
 use App\Models\Role;
 use App\Models\Source;
@@ -40,8 +41,12 @@ class DatabaseSeeder extends Seeder
                 'title' => $array[$i]
             ]);
         }
-        User::factory(['role_id' => Role::all()->random()->id])->count(10)->has(Client::factory(['source_id' => 1])->count(5), 'clients')->create();
-        User::factory(['role_id' => Role::all()->random()->id])->count(10)->has(Client::factory(['source_id' => null])->count(1), 'clients')->create();
+        User::factory(['role_id' => Role::all()->random()->id])
+            ->has(Client::factory(['source_id' => 1])->count(5)->has(Deposit::factory()->count(3), 'deposits'), 'clients')->create();
+
+        User::factory(['role_id' => Role::all()->random()->id])
+            ->count(10)->has(Client::factory(['source_id' => null])
+                ->count(1)->has(Deposit::factory()->count(3), 'deposits'), 'clients')->create();
 
         Manager::factory()->count(30)->create();
 

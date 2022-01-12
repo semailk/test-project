@@ -31,9 +31,14 @@
                         </td>
 
                         <td>
-                            <?php $client->managers->each(function ($client) {
-                                echo $client->name . ' (Fee)-  ' . $client->fee->fee . '<br>';
-                            }) ?>
+                        @foreach($client->managers as $manager)
+                            {{ $manager->name . ' (Fee)-  ' . $manager->fee->fee }} <br>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" style="width: {{ $manager->completed }}%;" aria-valuenow="{{ $manager->completed }}" aria-valuemin="0" aria-valuemax="100">{{ $manager->completed }}%</div>
+                                </div> <br>
+                            <h5>Plain-{{ $manager->plain['quarter_' . Illuminate\Support\Carbon::now()->quarter] }}  Deposits Sum - {{ $manager->deposits }}</h5>
+                        @endforeach
+
                         </td>
                     </tr>
                     {{--                @endcan--}}
@@ -54,7 +59,7 @@
                         </td>
                     </tr>
                 @endif
-                    @endforeach
+            @endforeach
             </tbody>
         </table>
     </div>

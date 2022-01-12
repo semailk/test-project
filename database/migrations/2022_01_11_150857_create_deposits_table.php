@@ -18,6 +18,7 @@ class CreateDepositsTable extends Migration
             $table->foreignId('client_id')->constrained()->cascadeOnDelete();
             $table->unsignedBigInteger('value');
             $table->date('date');
+            $table->timestamps();
         });
     }
 

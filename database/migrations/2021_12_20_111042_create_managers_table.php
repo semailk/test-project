@@ -18,6 +18,7 @@ class CreateManagersTable extends Migration
             $table->string('name');
             $table->string('surname');
             $table->double('salary');
+            $table->json('plain')->nullable();
             $table->timestamps();
         });
     }

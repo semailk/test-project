@@ -22,6 +22,7 @@ Route::get('/dont/source', [HomeController::class, 'index'])->name('dont.source'
 Route::resource('/clients', ClientController::class)->except('show');
 Route::get('/managers', [ManagerController::class, 'index'])->name('managers.index');
 Route::get('/exit', [HomeController::class, 'userExit'])->name('exit');
+Route::post('/manager/plain/edit', [ManagerController::class, 'plainEdit']);
 
 Auth::routes();
 
