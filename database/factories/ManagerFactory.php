@@ -19,10 +19,10 @@ class ManagerFactory extends Factory
             'surname' => $this->faker->lastName,
             'salary' => $this->faker->randomFloat(),
             'plain' => [
-                'quarter_1' => 10000,
-                'quarter_2' => 20000,
-                'quarter_3' => 30000,
-                'quarter_4' => 40000
+                'quarter_1' => rand(1000,10000),
+                'quarter_2' => rand(2000,20000),
+                'quarter_3' => rand(3000,30000),
+                'quarter_4' => rand(4000,40000)
                 ]
         ];
     }
