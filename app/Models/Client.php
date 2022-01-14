@@ -63,13 +63,6 @@ class Client extends Model
         return $this->belongsTo(Source::class);
     }
 
-    /**
-     * @return BelongsTo
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
 
     /**
      * @return HasMany

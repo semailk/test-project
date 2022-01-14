@@ -18,7 +18,8 @@
             </tr>
             </thead>
             <tbody>
-            @foreach($clients as $client)
+            @foreach($managers as $manager)
+                @foreach($manager->clients as $client)
                 {{--                @can(auth()->user()->role->name,$client, auth()->user())--}}
                 @if(!is_array($client))
                     <tr>
@@ -46,13 +47,9 @@
                                 {{ $client['client']->source->title }}@endif
                         </td>
 
-                        <td>
-                            <?php $client['client']->managers->each(function ($client) {
-                                echo $client->name . ' (Fee)-  ' . $client->fee->fee . '<br>';
-                            }) ?>
-                        </td>
                     </tr>
                 @endif
+            @endforeach
             @endforeach
             </tbody>
         </table>

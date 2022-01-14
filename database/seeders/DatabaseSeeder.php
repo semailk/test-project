@@ -23,8 +23,6 @@ class DatabaseSeeder extends Seeder
     {
         $roles = ['sales', 'senior_sales', 'head_of_sales', 'admin'];
 
-
-
         foreach ($roles as $role) {
             Role::query()->create([
                 'name' => $role
@@ -38,25 +36,19 @@ class DatabaseSeeder extends Seeder
             'client',
             'partner'
         ];
-        foreach ($array as $value){
+        foreach ($array as $value) {
             Source::query()->create([
                 'title' => $value
             ]);
         }
 
 
-    Manager::factory()->count(30)
-        ->has(ManagerPlain::factory(), 'managerPlains')
-        ->has(Client::factory(['source_id' => 1])->count(5)
-        ->has(Deposit::factory()->count(3), 'deposits')
-        ->for(User::factory(['role_id' => Role::all()->random()->id]), 'user'), 'clients')
-        ->create();
-
-    Manager::factory()->count(5)->has(ManagerPlain::factory(), 'managerPlains')
-        ->has(Client::factory()->count(1)
-        ->has(Deposit::factory()->count(3), 'deposits')
-        ->for(User::factory(['role_id' => Role::all()->random()->id]), 'user'), 'clients')
-        ->create();
+        User::factory()->count(30)->has(Manager::factory()
+            ->has(ManagerPlain::factory(), 'managerPlains')
+            ->has(Client::factory(['source_id' => 1])->count(5)
+                ->has(Deposit::factory()->count(3), 'deposits'), 'clients')
+            ->for(User::factory()->count(30), 'user'))
+            ->create();
 
         User::query()->create([
             'name' => 'admin',
@@ -65,6 +57,11 @@ class DatabaseSeeder extends Seeder
             'password' => \Hash::make('qweqweqwe')
         ]);
 
-        // \App\Models\User::factory(10)->create();
+        User::query()->get()->each(function (User $user) {
+            if ($user->id != 31) {
+                $user->parent_id = 31;
+                $user->save();
+            }
+        });
     }
 }

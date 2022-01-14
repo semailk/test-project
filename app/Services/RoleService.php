@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Client;
+use App\Models\Manager;
 use App\Models\Role;
 use App\Models\User;
 use Ramsey\Collection\Collection;
@@ -10,39 +11,35 @@ use Ramsey\Collection\Collection;
 class RoleService
 {
 
-    public function roleFilter($qb)
-    {
-        $result = match (auth()->user()->role->name) {
-            'sales' => $this->filter($qb, 'sales'),
-            'senior_sales' => $this->filter($qb, 'senior_sales'),
-            'head_of_sales' => $this->filter($qb, 'head_of_sales'),
-            'admin' => $this->filter($qb, 'admin'),
-        };
+    public const ROLE = [
+        1 => 'sales',
+        2 => 'senior_sales',
+        3 => 'head_of_sales',
+        4 => 'admin'
+    ];
 
-        return $result;
-    }
 
-    public function filter($qb, $role)
+    public function filter($qb)
     {
+        $role = self::ROLE[auth()->user()->role_id];
+
         if ($role === 'admin') {
             return $qb;
         } elseif ($role === 'sales') {
             $qb->where('user_id', \Auth::id());
             return $qb;
         } elseif ($role === 'senior_sales') {
-            $users = User::where('parent_id', auth()->id())->get()->pluck('id');
-            $users->add(\Auth::id());
-            $clients = Client::query()->whereIn('user_id',$users);
+            $users = User::where('parent_id', auth()->id())->where('role_id', 1)->get()->pluck('id');
+            $users->add(auth()->id());
+            $managers = $qb->whereIn('user_id', $users);
 
-            return $clients;
+            return $managers;
         } elseif ($role === 'head_of_sales') {
-            $users = User::where('parent_id', auth()->id())->get()->pluck('id');
-            $users->add(\Auth::id());
-            $clients = Client::query()->whereIn('user_id',$users);
+            $users = User::where('parent_id', auth()->id())->where('role_id', '<', 3)->get()->pluck('id');
+            $users->add(auth()->id());
+            $managers = $qb->whereIn('user_id', $users);
 
-            return $clients;
+            return $managers;
         }
-
-        return $result;
     }
 }

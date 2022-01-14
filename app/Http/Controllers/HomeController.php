@@ -24,26 +24,21 @@ class HomeController extends Controller
     {
         if (\request()->path() !== '/') {
             $clients = Client::with(['managers', 'source', 'deposits'])->get()->whereNull('source_id');
-            $clients = $this->roleService->roleFilter($clients);
+            $clients = $this->roleService->filter($clients);
         } else {
-            $clients = Client::with(['manager', 'source', 'deposits']);
-            $clients = $this->roleService->roleFilter($clients)->withTrashed()->get();
+            $managers = Manager::with(['clients', 'clients', 'managerPlains']);
+            $managers = $this->roleService->filter($managers)->get();
         }
+        $a = $managers->map(function (Manager $manager) {
+            return $manager->clients->count();
+        });
 
-//        $clients->map(function (Client $client) {
-//            $client->managers->map(function (Manager $manager) {
-//                $manager->clients->map(function (Client $client) use (&$manager) {
-//                    $manager->deposits = $client->deposits->sum('value');
-//                    $manager->completed = round($client->deposits->sum('value') / $manager->plain['quarter_' . Carbon::now()->quarter] * 100);
-//                });
-//            });
-//        });
-        $clientInfo['count'] = $clients->whereNull('deleted_at')->count();
-        $clientInfo['deleted'] = $clients->whereNotNull('deleted_at')->count();
-        $clientInfo['dont_source'] = $clients->whereNull('source_id');
+        $clientInfo['count'] = $a->sum();
+        $clientInfo['deleted'] = $managers->whereNotNull('clients.deleted_at')->count();
+        $clientInfo['dont_source'] = $managers->whereNotNull('clients.source_id');
 
         return \view('welcome', [
-            'clients' => $clients,
+            'managers' => $managers,
             'clientInfo' => $clientInfo
         ]);
     }

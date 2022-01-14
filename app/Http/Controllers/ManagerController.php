@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Manager;
 use App\Models\ManagerPlain;
+use App\Services\RoleService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -11,6 +12,11 @@ use Illuminate\View\View;
 
 class ManagerController extends Controller
 {
+    public function __construct(public RoleService $roleService)
+    {
+        //
+    }
+
     /**
      * Страница Менеджеров
      *
@@ -18,9 +24,10 @@ class ManagerController extends Controller
      */
     public function index(): View
     {
-        $managers = Manager::query()->with(['clients.deposits', 'managerPlains'])->get();
-
-        return view('manager.index', compact('managers'));
+        $managers = $this->roleService->filter(Manager::query()->with(['clients.deposits', 'managerPlains']));
+        return view('manager.index', [
+            'managers' => $managers->get()
+        ]);
     }
 
     /**
