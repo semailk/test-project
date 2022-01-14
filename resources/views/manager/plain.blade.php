@@ -74,12 +74,21 @@
                 </select>
             </div>
             <div class="col-md-3">
+                <label for="year">Год</label>
+                <select name="year" id="year" class="form-control">
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                </select>
+            </div>
+            <div class="col-md-3">
                 <label for="quarter">Квартал</label>
                 <select name="quarter" id="quarter" class="form-control">
-                    <option value="quarter_1">Квартал 1</option>
-                    <option value="quarter_2">Квартал 2</option>
-                    <option value="quarter_3">Квартал 3</option>
-                    <option value="quarter_4">Квартал 4</option>
+                    <option value="1">Квартал 1</option>
+                    <option value="2">Квартал 2</option>
+                    <option value="3">Квартал 3</option>
+                    <option value="4">Квартал 4</option>
                 </select>
             </div>
             <div class="col-md-3">
@@ -108,17 +117,16 @@
                     method: "POST",
                     data: {
                         _token: "{{ csrf_token() }}",
-                        id: $(this).val()
+                        id: $(this).val(),
                     },
                     success: function (response) {
-                        $('.blueTable tbody').empty().append(response)
-                        $.each(response['plain'], function (index, value){
+                        $('.blueTable tbody').empty()
+                        $.each(response, function (index){
                             $('.blueTable tbody').append('<tr>' +
-                                '<td>'+ index +'</td>'+
-                                '<td>'+ value +'</td>'
+                                '<td>'+ response[index]['date'] +'</td>'+
+                                '<td>'+ response[index]['plain'] +'</td>'
                             )
                         })
-
                     }
                 })
             })

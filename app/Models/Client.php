@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Client extends Model
 {
     use HasFactory, SoftDeletes;
+
     protected $softDelete = true;
 
     protected $fillable = [
@@ -29,17 +30,18 @@ class Client extends Model
         'phone',
         'deleted_at',
         'source_id',
+        'manager_id'
     ];
 
 
     /**
      * Возращаем всех менеджеров клиента
      *
-     * @return BelongsToMany
+     * @return belongsToMany
      */
-    public function managers(): BelongsToMany
+    public function manager(): belongsTo
     {
-        return $this->belongsToMany(Manager::class)->withPivot('fee')->as('fee');
+        return $this->belongsTo(Manager::class);
     }
 
     /**
@@ -64,7 +66,7 @@ class Client extends Model
     /**
      * @return BelongsTo
      */
-    public function client(): BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
@@ -75,5 +77,10 @@ class Client extends Model
     public function deposits(): HasMany
     {
         return $this->hasMany(Deposit::class);
+    }
+
+    public function getDepositsSumAttribute()
+    {
+        return $this->deposits->sum('value');
     }
 }

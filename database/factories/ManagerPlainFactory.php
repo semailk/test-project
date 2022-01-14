@@ -3,9 +3,8 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Carbon;
 
-class ManagerFactory extends Factory
+class ManagerPlainFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -15,10 +14,8 @@ class ManagerFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->name,
-            'surname' => $this->faker->lastName,
-            'salary' => $this->faker->randomFloat(),
-            'fee' => rand(100, 1000)
+            'plain' => random_int(1000, 10000),
+            'date' => '2022-01-01'
         ];
     }
 }

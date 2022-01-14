@@ -76,14 +76,6 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('clients.index') }}" class="nav-link text-white">
-                    <svg class="bi me-2" width="16" height="16">
-                        <use xlink:href="#speedometer2"></use>
-                    </svg>
-                    Клиенты
-                </a>
-            </li>
-            <li>
                 <a href="{{ route('managers.index') }}" class="nav-link text-white">
                     <svg class="bi me-2" width="16" height="16">
                         <use xlink:href="#table"></use>

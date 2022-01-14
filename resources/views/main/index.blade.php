@@ -5,6 +5,8 @@
             {{ session('success') }}
         </div>
     @endif
+
+    <div class="container d-flex flex-wrap">
     <table class="table">
         <thead>
         <tr>
@@ -20,20 +22,16 @@
         <tbody>
         @foreach($clients as $client)
             <tr>
-                <th scope="row">{{ \App\Models\Client::getFullName($client) }}</th>
+                <th scope="row">{{ $client->fullName }}</th>
                 <td>{{ $client->email }}</td>
                 <td>{{ $client->phone }}</td>
 
-                <td>@if(!is_null($client->source_id)){{ \App\Models\Source::getSourceTitle($client->source_id) }}@endif</td>
+                <td>@if(!is_null($client->source_id)){{ $client->source->title }}@endif</td>
                 <td>
-                    @foreach($client->managers as $manager)
-                        {{$manager->name}} - Fee: {{ $manager->fee->fee }} <br>
-                    @endforeach
+                        {{$client->manager->name}} - Fee: {{ $client->manager->fee }} <br>
                 </td>
                 <td>
-                    @foreach($client->managers as $manager)
-                        {{$manager->salary}} <br>
-                    @endforeach
+                        {{$client->manager->salary}} <br>
                 </td>
                 <td>
                     <a href="{{ route('clients.edit', $client->id) }}">
@@ -71,20 +69,16 @@
             <tbody>
             @foreach($clientInfo['dont_source'] as $client)
                 <tr>
-                    <th scope="row">{{ \App\Models\Client::getFullName($client) }}</th>
+                    <th scope="row">{{ $client->fullName }}</th>
                     <td>{{ $client->email }}</td>
                     <td>{{ $client->phone }}</td>
 
                     <td>@if(!is_null($client->source_id)){{ \App\Models\Source::getSourceTitle($client->source_id) }}@endif</td>
                     <td>
-                        @foreach($client->managers as $manager)
-                            {{$manager->name}} - Fee: {{ $manager->fee->fee }} <br>
-                        @endforeach
+                        {{$client->manager->name}} - Fee: {{ $client->manager->fee }} <br>
                     </td>
                     <td>
-                        @foreach($client->managers as $manager)
-                            {{$manager->salary}} <br>
-                        @endforeach
+                        {{$client->manager->salary}} <br>
                     </td>
                     <td>
                         <a href="{{ route('clients.edit', $client->id) }}">
@@ -101,4 +95,5 @@
             </tbody>
         </table>
     @endif
+    </div>
 @endsection

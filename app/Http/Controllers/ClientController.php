@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ClientUpdateRequest;
 use App\Http\Requests\ClientStoreRequest;
 use App\Models\Client;
 use App\Models\Manager;
 use App\Models\Source;
-use App\Models\User;
+use Illuminate\Http\Client\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -23,7 +22,7 @@ class ClientController extends Controller
         $clientInfo['count'] = Client::query()->get()->where('user_id', auth()->id())->count();
         $clientInfo['deleted'] = Client::query()->withTrashed()->whereNotNull('deleted_at')->get()->count();
         $clientInfo['dont_source'] = Client::query()->whereNull('source_id')->get();
-        $clients = Client::query()->with(['managers', 'source'])->orderBy('created_at', 'desc')->paginate(10);
+        $clients = Client::query()->with(['manager', 'source'])->orderBy('created_at', 'desc')->paginate(10);
 
         return view('main.index', compact('clients', 'clientInfo'));
     }
@@ -56,11 +55,10 @@ class ClientController extends Controller
     /**
      * Обновление клиента
      *
-     * @param ClientUpdateRequest $request
      * @param Client $client
      * @return RedirectResponse
      */
-    public function update(ClientUpdateRequest $request, Client $client): RedirectResponse
+    public function update(Request $request, Client $client): RedirectResponse
     {
         $client->update($request->validated());
         $managersId = $request->get('manager_id');

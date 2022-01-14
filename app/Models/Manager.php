@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property string $name
@@ -19,20 +20,24 @@ class Manager extends Model
         'name',
         'surname',
         'salary',
-        'plain'
     ];
 
-    protected $casts = [
-      'plain' => 'array'
-    ];
     /**
      * Возращаем всех клиектов менеджера
      *
-     * @return BelongsToMany
+     * @return HasMany
      */
-    public function clients(): BelongsToMany
+    public function clients(): HasMany
     {
-        return $this->belongsToMany(Client::class)->withPivot('fee')->as('fee');
+        return $this->hasMany(Client::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function managerPlains(): HasMany
+    {
+        return $this->hasMany(ManagerPlain::class);
     }
 
     /**
@@ -42,5 +47,19 @@ class Manager extends Model
     public static function getFullName(Manager $manager): string
     {
         return $manager->name . ' ' . $manager->surname;
+    }
+
+    /**
+     * Возвращаем сумму депозитов клиентов-менеджера
+     *
+     * @return float|int
+     */
+    public function getClientsSumDepositsAttribute()
+    {
+        $result = $this->clients()->with('deposits')->get()->map(function (Client $client) {
+            return $client->deposits->sum('value');
+        });
+
+        return array_sum($result->toArray());
     }
 }

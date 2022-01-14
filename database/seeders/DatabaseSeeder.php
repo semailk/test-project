@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Client;
 use App\Models\Deposit;
 use App\Models\Manager;
+use App\Models\ManagerPlain;
 use App\Models\Role;
 use App\Models\Source;
 use App\Models\User;
@@ -21,14 +22,15 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $roles = ['sales', 'senior_sales', 'head_of_sales', 'admin'];
-        $i = 0;
-        while (count($roles) > $i):
-            DB::table('roles')
-                ->insert([
-                    'name' => $roles[$i]
-                ]);
-            $i++;
-        endwhile;
+
+
+
+        foreach ($roles as $role) {
+            Role::query()->create([
+                'name' => $role
+            ]);
+        }
+
         $array = [
             'fb',
             'tg',
@@ -36,29 +38,32 @@ class DatabaseSeeder extends Seeder
             'client',
             'partner'
         ];
-        for ($i = 0; $i < count($array); $i++) {
+        foreach ($array as $value){
             Source::query()->create([
-                'title' => $array[$i]
+                'title' => $value
             ]);
         }
-        User::factory(['role_id' => Role::all()->random()->id])
-            ->has(Client::factory(['source_id' => 1])->count(5)->has(Deposit::factory()->count(3), 'deposits'), 'clients')->create();
-
-        User::factory(['role_id' => Role::all()->random()->id])
-            ->count(10)->has(Client::factory(['source_id' => null])
-                ->count(1)->has(Deposit::factory()->count(3), 'deposits'), 'clients')->create();
-
-        Manager::factory()->count(30)->create();
-
-        $managersCount = Manager::query()->get()->count();
 
 
-        for ($i = 1; $i <= 3; $i++) {
-            Client::query()->get()->map(function ($client) use ($managersCount) {
-                $client->managers()->attach(rand(1, $managersCount), ['fee' => rand(50, 2000)]);
-            });
-        }
+    Manager::factory()->count(30)
+        ->has(ManagerPlain::factory(), 'managerPlains')
+        ->has(Client::factory(['source_id' => 1])->count(5)
+        ->has(Deposit::factory()->count(3), 'deposits')
+        ->for(User::factory(['role_id' => Role::all()->random()->id]), 'user'), 'clients')
+        ->create();
 
+    Manager::factory()->count(5)->has(ManagerPlain::factory(), 'managerPlains')
+        ->has(Client::factory()->count(1)
+        ->has(Deposit::factory()->count(3), 'deposits')
+        ->for(User::factory(['role_id' => Role::all()->random()->id]), 'user'), 'clients')
+        ->create();
+
+        User::query()->create([
+            'name' => 'admin',
+            'role_id' => 4,
+            'email' => 'admin@mail.ru',
+            'password' => \Hash::make('qweqweqwe')
+        ]);
 
         // \App\Models\User::factory(10)->create();
     }

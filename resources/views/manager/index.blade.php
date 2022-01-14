@@ -23,40 +23,18 @@
                     @endforeach
                 </td>
                 <td>
-                    <form action="" class="d-flex">
-                        <input value="{{ $manager->plain['quarter_' . Illuminate\Support\Carbon::now()->quarter] }}" type="number" name="plain"
-                               placeholder="Укажите план за квартал" class="form-control">
-                        <button type="button" data-value="{{ $manager->plain['quarter_' . Illuminate\Support\Carbon::now()->quarter] }}" data-id="{{ $manager->id }}"
-                                class="btn btn-outline-danger">OK!
-                        </button>
-                    </form>
+                    @foreach($manager->managerPlains as $managerPlain)
+                        @if($managerPlain->CheckQuarter)
+                           {{ $manager->clientsSumDeposits }} из {{ round($managerPlain->plain) }} ({{round( round($manager->clientsSumDeposits) /  round($managerPlain->plain) * 100) . '%' }})
+                        @else
+                            <h6>Нету плана на текущий квартал.</h6>
+                        @endif
+                    @endforeach
+
                 </td>
             </tr>
         @endforeach
         </tbody>
     </table>
-    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
-            integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
-    <script>
-        $(document).ready(function () {
-            $('.btn-outline-danger').click(function () {
-                var params = {
-                    id: $(this).attr('data-id'),
-                    plain: $(this).parent().find('input').val()
-                }
-                $.ajax({
-                    url: "/manager/plain/edit",
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    method: "POST",
-                    data: params
-                    , success: function () {
-                        location.reload()
-                    }
-                })
-            })
-        });
-    </script>
 @endsection
 

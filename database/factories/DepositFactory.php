@@ -14,7 +14,7 @@ class DepositFactory extends Factory
     public function definition()
     {
         return [
-            'value' => rand(500,1000),
+            'value' => random_int(500,1000),
             'date' => $this->faker->date
         ];
     }

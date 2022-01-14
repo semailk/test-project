@@ -14,7 +14,7 @@
                 <th scope="col">Email</th>
                 <th scope="col">Телефон</th>
                 <th scope="col">Source</th>
-                <th scope="col">Managers</th>
+                <th scope="col">Deposits</th>
             </tr>
             </thead>
             <tbody>
@@ -31,13 +31,7 @@
                         </td>
 
                         <td>
-                        @foreach($client->managers as $manager)
-                            {{ $manager->name . ' (Fee)-  ' . $manager->fee->fee }} <br>
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: {{ $manager->completed }}%;" aria-valuenow="{{ $manager->completed }}" aria-valuemin="0" aria-valuemax="100">{{ $manager->completed }}%</div>
-                                </div> <br>
-                            <h5>Plain-{{ $manager->plain['quarter_' . Illuminate\Support\Carbon::now()->quarter] }}  Deposits Sum - {{ $manager->deposits }}</h5>
-                        @endforeach
+                            {{ $client->depositsSum }}
 
                         </td>
                     </tr>
