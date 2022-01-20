@@ -23,17 +23,17 @@ class HomeController extends Controller
     public function index(): View
     {
         if (\request()->path() !== '/') {
-            $clients = Client::with(['managers', 'source', 'deposits'])->get()->whereNull('source_id');
-            $clients = $this->roleService->filter($clients);
+            $managers = Client::with(['clients', 'clients', 'managerPlains'])->get()->whereNull('source_id');
+            $managers = $this->roleService->filter($managers)->get();
         } else {
             $managers = Manager::with(['clients', 'clients', 'managerPlains']);
             $managers = $this->roleService->filter($managers)->get();
         }
-        $a = $managers->map(function (Manager $manager) {
+        $clientSum = $managers->map(function (Manager $manager) {
             return $manager->clients->count();
         });
 
-        $clientInfo['count'] = $a->sum();
+        $clientInfo['count'] = $clientSum->sum();
         $clientInfo['deleted'] = $managers->whereNotNull('clients.deleted_at')->count();
         $clientInfo['dont_source'] = $managers->whereNotNull('clients.source_id');
 
