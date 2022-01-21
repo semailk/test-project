@@ -81,10 +81,12 @@ class DepositService
                 $certificate->save();
                 $withdraw = $withdraw - $certificate->shares;
             } else {
+                if ($withdraw <= 0){
+                    return;
+                }
                 $certificate->canceled_shares = $request->withdraw;
                 $certificate->canceled_at = Carbon::now()->toDateTimeString();
-
-                if (($certificate->shares - $withdraw) > 0) {
+                if ($withdraw > 0) {
                     $newCertificate = new Certificate();
                     $newCertificate->client_id = $request->client_id;
                     $newCertificate->shares = $certificate->shares - $withdraw;
@@ -96,6 +98,8 @@ class DepositService
                     $newCertificate->save();
                 }
                 $certificate->save();
+                $withdraw = $withdraw - $certificate->shares;
+
             }
         }
     }
