@@ -14,7 +14,7 @@ class ManagerController extends Controller
 {
     public function __construct(public RoleService $roleService)
     {
-        //
+        $this->middleware('auth');
     }
 
     /**

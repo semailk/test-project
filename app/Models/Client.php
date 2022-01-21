@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $email
  * @property string $phone
  * @property integer $source_id
+ * @property integer $balance
  */
 class Client extends Model
 {
@@ -30,7 +31,8 @@ class Client extends Model
         'phone',
         'deleted_at',
         'source_id',
-        'manager_id'
+        'manager_id',
+        'balance'
     ];
 
 
@@ -69,11 +71,38 @@ class Client extends Model
      */
     public function deposits(): HasMany
     {
-        return $this->hasMany(Deposit::class);
+        return $this->hasMany(Deposit::class)->orderByDesc('created_at');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function depositsSum(): HasMany
+    {
+        return $this->hasMany(Deposit::class)->sum('value');
     }
 
     public function getDepositsSumAttribute()
     {
         return $this->deposits->sum('value');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(Certificate::class);
+    }
+
+
+    /**
+     * @return int
+     */
+    public function certificatesSum(): int
+    {
+        return $this->hasMany(Certificate::class)
+            ->whereNull('canceled_at')
+            ->sum('shares');
     }
 }

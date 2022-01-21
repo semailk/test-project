@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\DepositController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ManagerController;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,10 @@ Route::post('/managers/plain/create', [ManagerController::class, 'plainCreate'])
 Route::post('/managers/get/plain', [ManagerController::class, 'getPlain']);
 Route::get('/exit', [HomeController::class, 'userExit'])->name('exit');
 Route::post('/manager/plain/edit', [ManagerController::class, 'plainEdit']);
-
+Route::get('/deposits', [DepositController::class, 'index'])->name('deposits');
+Route::get('/deposits/{id}', [DepositController::class, 'create'])->name('deposits.show');
+Route::get('/deposits/exchange/{id}', [DepositController::class, 'exchangeDeposit'])->name('deposits.exchange');
+Route::post('/deposits/store', [DepositController::class, 'store'])->name('deposits.store');
+Route::post('/withdraw', [DepositController::class, 'withdrawT'])->name('withdraw');
 Auth::routes();
 

@@ -99,6 +99,14 @@
                     Добавить клиента
                 </a>
             </li>
+            <li>
+                <a href="{{ route('deposits') }}" class="nav-link text-white">
+                    <svg class="bi me-2" width="16" height="16">
+                        <use xlink:href="#grid"></use>
+                    </svg>
+                    Депозиты
+                </a>
+            </li>
             @if(auth()->check())
                 <li style="font-size: 15px;color: white">Привет, {{ auth()->user()->name }}!</li>
                 <li><a href="{{ route('exit') }}">Выйти</a></li>
@@ -115,8 +123,10 @@
     @yield('content')</div>
 </body>
 </html>
+
 <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
         crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 <script>
     $(document).ready(function () {
         $('.nav-pills li a').click(function () {
