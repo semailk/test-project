@@ -6,38 +6,22 @@ use App\Models\Certificate;
 use App\Models\Client;
 use App\Models\Deposit;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class DepositService
 {
     /**
-     * @param Request $request
+     * @param $request
      * @return int
      */
-    public function store(Request $request): int
+    public function store($request): int
     {
-        $rules = [
-            'client_id' => [
-                'required',
-                'numeric',
-                Rule::exists('clients', 'id'),
-            ],
-            'value' => [
-                'required',
-                'numeric',
-                'min:1'
-            ]
-        ];
-
-        $request->validate($rules);
-
         $deposit = new Deposit();
         $deposit->client_id = $request->client_id;
         $deposit->value = $request->value;
         $deposit->date = Carbon::now()->toDateString();
         $deposit->save();
+
+        /** @var Client $client */
         $client = Client::query()->findOrFail($request->client_id);
         $client->balance = $client->balance + $request->value;
         $newBalance = $client->balance;
@@ -47,61 +31,44 @@ class DepositService
     }
 
     /**
-     * @param Request $request
-     * @return void
+     * @param $request
      */
-    public function withdraw(Request $request): void
+    public function withdraw($request): void
     {
-
-        $rules = [
-            'client_id' => [
-                'required',
-                'numeric',
-                Rule::exists('clients', 'id'),
-            ],
-            'withdraw' => [
-                'required',
-                'numeric',
-                'min:1'
-            ]
-        ];
-
-        $request->validate($rules);
-
-        $certificates = Certificate::query()
-            ->where('client_id', $request->client_id)
-            ->whereNull('canceled_at')
-            ->get();
         $withdraw = $request->withdraw;
 
-        foreach ($certificates as $certificate) {
-            if ($certificate->shares <= $withdraw) {
-                $certificate->canceled_at = Carbon::now()->toDateTimeString();
-                $certificate->canceled_shares = $certificate->shares;
-                $certificate->save();
-                $withdraw = $withdraw - $certificate->shares;
-            } else {
-                if ($withdraw <= 0){
-                    return;
-                }
-                $certificate->canceled_shares = $request->withdraw;
-                $certificate->canceled_at = Carbon::now()->toDateTimeString();
-                if ($withdraw > 0) {
-                    $newCertificate = new Certificate();
-                    $newCertificate->client_id = $request->client_id;
-                    $newCertificate->shares = $certificate->shares - $withdraw;
-                    $newCertificate->number = $certificate->number + 1;
-                    $newCertificate->name = $certificate->name;
-                    $newCertificate->canceled_at = null;
-                    $newCertificate->canceled_shares = 0;
+        Certificate::query()
+            ->where('client_id', $request->client_id)
+            ->whereNull('canceled_at')
+            ->get()
+            ->each(function (Certificate $certificate) use (&$withdraw, $request) {
+                if ($certificate->shares <= $withdraw) {
+                    $certificate->canceled_at = Carbon::now()->toDateTimeString();
+                    $certificate->canceled_shares = $certificate->shares;
+                    $certificate->save();
+                    $withdraw = $withdraw - $certificate->shares;
+                } else {
+                    if ($withdraw <= 0) {
+                        return;
+                    }
+                    $certificate->canceled_shares = $request->withdraw;
+                    $certificate->canceled_at = Carbon::now()->toDateTimeString();
+                    if ($withdraw > 0) {
+                        $newCertificate = new Certificate();
+                        $newCertificate->client_id = $request->client_id;
+                        $newCertificate->shares = $certificate->shares - $withdraw;
+                        $newCertificate->number = $certificate->number + 1;
+                        $newCertificate->name = $certificate->name;
+                        $newCertificate->canceled_at = null;
+                        $newCertificate->canceled_shares = 0;
 
-                    $newCertificate->save();
-                }
-                $certificate->save();
-                $withdraw = $withdraw - $certificate->shares;
+                        $newCertificate->save();
+                    }
+                    $certificate->save();
+                    $withdraw = $withdraw - $certificate->shares;
 
-            }
-        }
+                }
+            });
     }
 
     /**
@@ -112,8 +79,8 @@ class DepositService
      */
     public function exchangeDeposit($id): int
     {
+        /** @var Client $client **/
         $client = Client::query()->findOrFail($id);
-        $canceledShares = Certificate::query()->where('client_id', $id)->get()->sum('canceled_shares');
         $countBuyCertificates = (int)($client->balance / 1000);
         if ($countBuyCertificates >= 1) {
             $certificate = new Certificate();

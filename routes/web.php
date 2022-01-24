@@ -19,18 +19,28 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/dont/source', [HomeController::class, 'index'])->name('dont.source');
-
 Route::resource('/clients', ClientController::class)->except('show');
-Route::get('/managers', [ManagerController::class, 'index'])->name('managers.index');
-Route::get('/managers/plain', [ManagerController::class, 'plainAction'])->name('managers.plain');
-Route::post('/managers/plain/create', [ManagerController::class, 'plainCreate'])->name('managers.plain.create');
-Route::post('/managers/get/plain', [ManagerController::class, 'getPlain']);
-Route::get('/exit', [HomeController::class, 'userExit'])->name('exit');
-Route::post('/manager/plain/edit', [ManagerController::class, 'plainEdit']);
-Route::get('/deposits', [DepositController::class, 'index'])->name('deposits');
-Route::get('/deposits/{id}', [DepositController::class, 'create'])->name('deposits.show');
-Route::get('/deposits/exchange/{id}', [DepositController::class, 'exchangeDeposit'])->name('deposits.exchange');
-Route::post('/deposits/store', [DepositController::class, 'store'])->name('deposits.store');
-Route::post('/withdraw', [DepositController::class, 'withdrawT'])->name('withdraw');
+
 Auth::routes();
+
+Route::middleware('auth')->group(function (){
+    // Роуты для менеджаров
+    Route::prefix('managers')->group(function (){
+        Route::get('', [ManagerController::class, 'index'])->name('managers.index');
+        Route::get('plain', [ManagerController::class, 'plainAction'])->name('managers.plain');
+        Route::post('plain/create', [ManagerController::class, 'plainCreate'])->name('managers.plain.create');
+        Route::post('get/plain', [ManagerController::class, 'getPlain']);
+        Route::get('exit', [HomeController::class, 'userExit'])->name('exit');
+        Route::post('plain/edit', [ManagerController::class, 'plainEdit']);
+    });
+
+    // Роуты для депозитов
+    Route::prefix('deposits')->group(function (){
+        Route::get('', [DepositController::class, 'index'])->name('deposits');
+        Route::get('{id}', [DepositController::class, 'create'])->name('deposits.show');
+        Route::get('exchange/{id}', [DepositController::class, 'exchangeDeposit'])->name('deposits.exchange');
+        Route::post('store', [DepositController::class, 'store'])->name('deposits.store');
+        Route::post('withdraw', [DepositController::class, 'withdrawT'])->name('withdraw');
+    });
+});
 
