@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class DepositService
 {
-    public function __construct(public Deposit $deposit, public Certificate $certificate)
+    public function __construct(public Deposit $deposit)
     {
         //
     }
@@ -21,14 +21,15 @@ class DepositService
      */
     public function store(Request $request): int
     {
-        $this->deposit->client_id = $request->client_id;
-        $this->deposit->value = $request->value;
-        $this->deposit->date = Carbon::now()->toDateString();
-        $this->deposit->save();
+        Deposit::create([
+           'client_id' =>  $request->client_id,
+            'value' => $request->value,
+            'date' => Carbon::now()->toDateString(),
+        ]);
 
         /** @var Client $client */
         $client = Client::query()->findOrFail($request->client_id);
-        $client->balance = $client->balance + $request->value;
+        $client->balance += $request->value;
         $newBalance = $client->balance;
         $client->save();
 
@@ -51,7 +52,7 @@ class DepositService
                     $certificate->canceled_at = Carbon::now()->toDateTimeString();
                     $certificate->canceled_shares = $certificate->shares;
                     $certificate->save();
-                    $withdraw = $withdraw - $certificate->shares;
+                    $withdraw -= $certificate->shares;
                 } else {
                     if ($withdraw <= 0) {
                         return;
@@ -59,17 +60,17 @@ class DepositService
                     $certificate->canceled_shares = $request->withdraw;
                     $certificate->canceled_at = Carbon::now()->toDateTimeString();
                     if ($withdraw > 0) {
-                        $this->certificate->client_id = $request->client_id;
-                        $this->certificate->shares = $certificate->shares - $withdraw;
-                        $this->certificate->number = $certificate->number + 1;
-                        $this->certificate->name = $certificate->name;
-                        $this->certificate->canceled_at = null;
-                        $this->certificate->canceled_shares = 0;
-
-                        $this->certificate->save();
+                        Certificate::create([
+                            'client_id' => $request->client_id,
+                            'shares' => $certificate->shares - $withdraw,
+                            'number' => $certificate->number + 1,
+                            'name' => $certificate->name,
+                            'canceled_at' => null,
+                            'canceled_shares' => 0
+                        ]);
                     }
                     $certificate->save();
-                    $withdraw = $withdraw - $certificate->shares;
+                    $withdraw -= $certificate->shares;
 
                 }
             });
@@ -77,25 +78,28 @@ class DepositService
 
     /**
      * Обмениваем депозит на акции
-     *
-     * @param $id
-     * @return int
      */
-    public function exchangeDeposit($id): int
+    public function exchangeDeposit(Client $client)
     {
-        /** @var Client $client **/
-        $client = Client::query()->findOrFail($id);
         $countBuyCertificates = (int)($client->balance / 1000);
-        if ($countBuyCertificates >= 1) {
-            $this->certificate->client_id = $id;
-            $this->certificate->shares = $countBuyCertificates;
-            $this->certificate->name = $client->name;
-            $this->certificate->number = $this->certificate->number + 1;
-            $this->certificate->canceled_shares = 0;
-            $this->certificate->canceled_at = null;
-            $this->certificate->save();
 
-            $client->balance = $client->balance - ($countBuyCertificates * 1000);
+        $lastCertificate = Certificate::query()
+            ->where('client_id', $client->id)
+            ->orderByDesc('number')
+            ->take(1)
+            ->first();
+
+        if ($countBuyCertificates >= 1) {
+            Certificate::create([
+               'client_id' => $client->id,
+                'shares' => $countBuyCertificates,
+                'name' => $client->name,
+                'number' => ($lastCertificate->number > 1) ? + 1 : 1,
+                'canceled_shares' => 0 ,
+                'canceled_at' => null
+            ]);
+
+            $client->balance -= ($countBuyCertificates * 1000);
             $client->save();
         }
 

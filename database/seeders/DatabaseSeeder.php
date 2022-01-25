@@ -89,7 +89,7 @@ class DatabaseSeeder extends Seeder
             $certificate->client_id = $client->id;
             $certificate->name = $client->name;
             $certificate->shares = random_int(1, 50);
-            $certificate->number = 2;
+            $certificate->number = 3;
             $certificate->save();
         });
     }

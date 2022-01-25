@@ -37,8 +37,8 @@ Route::middleware('auth')->group(function (){
     // Роуты для депозитов
     Route::prefix('deposits')->group(function (){
         Route::get('', [DepositController::class, 'index'])->name('deposits');
-        Route::get('{id}', [DepositController::class, 'create'])->name('deposits.show');
-        Route::get('exchange/{id}', [DepositController::class, 'exchangeDeposit'])->name('deposits.exchange');
+        Route::get('{client}', [DepositController::class, 'create'])->name('deposits.show');
+        Route::get('exchange/{client}', [DepositController::class, 'exchangeDeposit'])->name('deposits.exchange');
         Route::post('store', [DepositController::class, 'store'])->name('deposits.store');
         Route::post('withdraw', [DepositController::class, 'withdrawT'])->name('withdraw');
     });

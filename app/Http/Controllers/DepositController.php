@@ -29,12 +29,12 @@ class DepositController extends Controller
     /**
      * Страница клиента для создания или обмена акций
      *
-     * @param $id
+     * @param Client $client
      * @return View
      */
-    public function create($id): View
+    public function create(Client $client): View
     {
-        $client = Client::query()->with(['deposits', 'certificates'])->findOrFail($id);
+        $client->with(['deposits', 'certificates']);
 
         return view('deposit.create', compact('client'));
     }
@@ -68,14 +68,12 @@ class DepositController extends Controller
     }
 
     /**
-     * Обмен баланса на акции
-     *
-     * @param $id
+     * @param Client $client
      * @return RedirectResponse
      */
-    public function exchangeDeposit($id): RedirectResponse
+    public function exchangeDeposit(Client $client): RedirectResponse
     {
-        $countBuyCertificates = $this->depositService->exchangeDeposit($id);
+        $countBuyCertificates = $this->depositService->exchangeDeposit($client);
         return redirect()->back()->with(['success' => 'Вы преобрели: ' . $countBuyCertificates . ' акций.']);
     }
 }
