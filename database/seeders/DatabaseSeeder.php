@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Certificate;
 use App\Models\Client;
 use App\Models\Deposit;
 use App\Models\Manager;
@@ -45,7 +46,7 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->count(30)->has(Manager::factory()
             ->has(ManagerPlain::factory(), 'managerPlains')
-            ->has(Client::factory(['source_id' => 1])->count(5)
+            ->has(Client::factory(['source_id' => 1, 'balance' => 50000])->count(5)
                 ->has(Deposit::factory()->count(3), 'deposits'), 'clients')
             ->for(User::factory()->count(30), 'user'))
             ->create();
@@ -62,6 +63,34 @@ class DatabaseSeeder extends Seeder
                 $user->parent_id = 31;
                 $user->save();
             }
+        });
+
+        $this->certificateCreate();
+    }
+
+    public function certificateCreate(): void
+    {
+        Client::query()->get()->each(function (Client $client) {
+            $certificate = new Certificate();
+            $certificate->client_id = $client->id;
+            $certificate->name = $client->name;
+            $certificate->shares = random_int(1, 50);
+            $certificate->number = 1;
+            $certificate->save();
+
+            $certificate = new Certificate();
+            $certificate->client_id = $client->id;
+            $certificate->name = $client->name;
+            $certificate->shares = random_int(1, 50);
+            $certificate->number = 2;
+            $certificate->save();
+
+            $certificate = new Certificate();
+            $certificate->client_id = $client->id;
+            $certificate->name = $client->name;
+            $certificate->shares = random_int(1, 50);
+            $certificate->number = 2;
+            $certificate->save();
         });
     }
 }
