@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/dont/source', [HomeController::class, 'index'])->name('dont.source');
 Route::resource('/clients', ClientController::class)->except('show');
@@ -41,6 +42,7 @@ Route::middleware('auth')->group(function (){
         Route::get('exchange/{client}', [DepositController::class, 'exchangeDeposit'])->name('deposits.exchange');
         Route::post('store', [DepositController::class, 'store'])->name('deposits.store');
         Route::post('withdraw', [DepositController::class, 'withdrawT'])->name('withdraw');
+        Route::get('pdf/store/{client}', [DepositController::class, 'pdfStore'])->name('pdf.store');
     });
 });
 

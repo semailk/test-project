@@ -29,6 +29,7 @@
                         <button type="submit" class="btn btn-secondary mt-2">Сохранить</button>
                     </form>
                 </div>
+                <em><a href="{{ route('pdf.store', $client->id) }}" style="text-decoration: none">Скачать в pdf</a></em>
                 <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
                     <form action="{{ route('withdraw')}}" method="post">
                         @csrf
@@ -86,5 +87,16 @@
                 <div class="alert alert-success mt-2">{{ session('success') }}</div>
             @endif
         </nav>
+        <div id="adobe-dc-view"></div>
+        <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+        <script type="text/javascript">
+            document.addEventListener("adobe_dc_view_sdk.ready", function(){
+                var adobeDCView = new AdobeDC.View({clientId: "ab818492127e406db04324ac72bb4dcf", divId: "adobe-dc-view"});
+                adobeDCView.previewFile({
+                    content:{location: {url: "https://documentcloud.adobe.com/view-sdk-demo/PDFs/Bodea Brochure.pdf"}},
+                    metaData:{fileName: "Bodea Brochure.pdf"}
+                }, {});
+            });
+        </script>
 
 @endsection
