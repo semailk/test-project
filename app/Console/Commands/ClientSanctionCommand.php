@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Http\Controllers\SanctionController;
 use App\Models\Client;
+use App\Services\SanctionService;
 use Illuminate\Console\Command;
 
 class ClientSanctionCommand extends Command
@@ -28,7 +28,7 @@ class ClientSanctionCommand extends Command
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(protected SanctionService $sanctionService)
     {
         parent::__construct();
     }
@@ -51,16 +51,18 @@ class ClientSanctionCommand extends Command
         Client::all()->each(function (Client $client) {
             sleep(1);
             $search = [
-                'size' => strlen($client->name),
+                'size' => 10,
                 'entity_type' => ['individual'],
                 'all_programs' => true,
                 'keyword' => $client->name
             ];
 
-            $response = SanctionController::responseDTO(\Http::post($this->url, $search));
+            $response = $this->sanctionService->responseDTO(\Http::post($this->url, $search));
 
             foreach ($response as $item) {
-                if ($item['entity_name'] === $client->name && $item['birthdate'] === $client->dateOfBirthCarbon) {
+                if ($item['entity_name'] === $client->name &&
+                    $item['birthdate'] === $client->dateOfBirthCarbon ||
+                    $item['birthdate'] === $client->birth_date) {
                     \Log::channel('sanction')->warning('ID: ' . $client->id . ' ' . $client->name . ' есть санкции - ' . $item['url']);
                 }
             }
