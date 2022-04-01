@@ -10,16 +10,29 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
+ * @property int $id
  * @property string $name
  * @property string $surname
  * @property string $email
  * @property string $phone
  * @property integer $source_id
  * @property integer $balance
+ * @property integer $manager_id
+ * @property string $birth_date
+ * @property-read string dateOfBirthCarbon
  */
 class Client extends Model
 {
     use HasFactory, SoftDeletes;
+
+    private string $carbonDate = '';
+
+    public const MONTH = [
+        'Jan', 'Feb', 'Mar',
+        ' Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep',
+        'Oct', 'Nov', 'Dec'
+    ];
 
     protected $softDelete = true;
 
@@ -31,14 +44,15 @@ class Client extends Model
         'deleted_at',
         'source_id',
         'manager_id',
-        'balance'
+        'balance',
+        'birth_date'
     ];
 
 
     /**
      * Возращаем всех менеджеров клиента
      *
-     * @return belongsToMany
+     * @return belongsTo
      */
     public function manager(): belongsTo
     {
@@ -103,5 +117,16 @@ class Client extends Model
         return $this->hasMany(Certificate::class)
             ->whereNull('canceled_at')
             ->sum('shares');
+    }
+
+    /**
+     * @return string
+     */
+    public function getDateOfBirthCarbonAttribute(): string
+    {
+        $birthDate = explode('-', $this->birth_date);
+        $this->carbonDate = $birthDate[2] . ' ' . self::MONTH[--$birthDate[1]] . ' ' . $birthDate[0];
+
+        return $this->carbonDate;
     }
 }

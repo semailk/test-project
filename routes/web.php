@@ -4,6 +4,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DepositController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ManagerController;
+use App\Http\Controllers\SanctionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,9 +25,9 @@ Route::resource('/clients', ClientController::class)->except('show');
 
 Auth::routes();
 
-Route::middleware('auth')->group(function (){
+Route::middleware('auth')->group(function () {
     // Роуты для менеджаров
-    Route::prefix('managers')->group(function (){
+    Route::prefix('managers')->group(function () {
         Route::get('', [ManagerController::class, 'index'])->name('managers.index');
         Route::get('plain', [ManagerController::class, 'plainAction'])->name('managers.plain');
         Route::post('plain/create', [ManagerController::class, 'plainCreate'])->name('managers.plain.create');
@@ -36,13 +37,19 @@ Route::middleware('auth')->group(function (){
     });
 
     // Роуты для депозитов
-    Route::prefix('deposits')->group(function (){
+    Route::prefix('deposits')->group(function () {
         Route::get('', [DepositController::class, 'index'])->name('deposits');
         Route::get('{client}', [DepositController::class, 'create'])->name('deposits.show');
         Route::get('exchange/{client}', [DepositController::class, 'exchangeDeposit'])->name('deposits.exchange');
         Route::post('store', [DepositController::class, 'store'])->name('deposits.store');
         Route::post('withdraw', [DepositController::class, 'withdrawT'])->name('withdraw');
         Route::get('/pdf/store/{id}', [DepositController::class, 'pdfStore'])->name('pdf.store');
+    });
+
+    Route::prefix('sanction-search')->group(function () {
+        Route::get('/', [SanctionController::class, 'index'])->name('sanction.index');
+        Route::post('/', [SanctionController::class, 'editAjax'])->name('sanction.edit');
+        Route::get('/{name}', [SanctionController::class, 'getName'])->name('sanction.name');
     });
 });
 

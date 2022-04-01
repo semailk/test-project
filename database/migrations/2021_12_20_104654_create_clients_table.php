@@ -19,6 +19,7 @@ class CreateClientsTable extends Migration
             $table->string('surname');
             $table->string('email');
             $table->string('phone');
+            $table->date('birth_date');
             $table->foreignId('source_id')->nullable()->default(null);
             $table->softDeletes();
             $table->timestamps();

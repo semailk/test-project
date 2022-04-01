@@ -19,6 +19,7 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
+<meta name="csrf-token" content="{{ csrf_token() }}" />
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
 
@@ -105,6 +106,14 @@
                         <use xlink:href="#grid"></use>
                     </svg>
                     Депозиты
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('sanction.index') }}" class="nav-link text-white">
+                    <svg class="bi me-2" width="16" height="16">
+                        <use xlink:href="#grid"></use>
+                    </svg>
+                    Sanction
                 </a>
             </li>
             @if(auth()->check())
